@@ -15,7 +15,8 @@ MagicWord = MagicWordIO(Struct("< 8s"), "_ARCHIVE".encode("ascii"))
 
 @dataclass
 class Version:
-    """ The Major Version; Relic refers to this as the 'Version' """
+    """The Major Version; Relic refers to this as the 'Version'"""
+
     major: int
     """ The Minor Version; Relic refers to this as the 'Product' """
     minor: int = 0
@@ -25,8 +26,12 @@ class Version:
     def __str__(self) -> str:
         return f"Version {self.major}.{self.minor}"
 
-    def __eq__(self, other:object) -> bool:
-        return isinstance(other, Version) and self.major == other.major and self.minor == other.minor
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, Version)
+            and self.major == other.major
+            and self.minor == other.minor
+        )
 
     def __hash__(self) -> int:
         # if this was C we could guarantee the hash was unique
@@ -54,7 +59,7 @@ class Version:
         """
         layout: Struct = self.LAYOUT
         args = (self.major, self.minor)
-        packed:int = layout.pack_stream(stream, *args)
+        packed: int = layout.pack_stream(stream, *args)
         return packed
 
 
@@ -62,6 +67,7 @@ class StorageType(int, Enum):
     """
     Specifies whether data is stored as a 'raw blob' or as a 'zlib compressed blob'
     """
+
     STORE = 0
     BUFFER_COMPRESS = 1
     STREAM_COMPRESS = 2
@@ -71,6 +77,7 @@ class VerificationType(int, Enum):
     """
     A 'Flag' used to specify how the data's Redundancy Check is stored.
     """
+
     NONE = 0  # unknown real values, assuming incremental
     CRC = 1  # unknown real values, assuming incremental
     CRC_BLOCKS = 2  # unknown real values, assuming incremental

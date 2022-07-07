@@ -5,7 +5,15 @@ Used in 'Age of Empires 4'.
 """
 
 from relic.sga.v9._serializers import archive_serializer as ArchiveIO
-from relic.sga.v9._core import Archive, Drive, Folder, File, ArchiveMetadata, version, FileMetadata
+from relic.sga.v9._core import (
+    Archive,
+    Drive,
+    Folder,
+    File,
+    ArchiveMetadata,
+    version,
+    FileMetadata,
+)
 
 __all__ = [
     "Archive",
@@ -15,5 +23,5 @@ __all__ = [
     "ArchiveIO",
     "version",
     "ArchiveMetadata",
-    "FileMetadata"
+    "FileMetadata",
 ]

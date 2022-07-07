@@ -27,7 +27,7 @@ class ArchiveMetadata:
 
     _file_md5: Md5ChecksumHelper
     _header_md5: Md5ChecksumHelper
-    unk_a:int
+    unk_a: int
 
 
 @dataclass
@@ -42,7 +42,7 @@ class FileMetadata:
     verification: VerificationType
 
 
-Archive = _abc.Archive[ArchiveMetadata,FileMetadata]
+Archive = _abc.Archive[ArchiveMetadata, FileMetadata]
 Folder = _abc.Folder[FileMetadata]
 File = _abc.File[FileMetadata]
 Drive = _abc.Drive[FileMetadata]

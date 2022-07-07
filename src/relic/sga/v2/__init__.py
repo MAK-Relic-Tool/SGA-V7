@@ -15,5 +15,5 @@ __all__ = [
     "File",
     "ArchiveIO",
     "version",
-    "ArchiveMetadata"
+    "ArchiveMetadata",
 ]

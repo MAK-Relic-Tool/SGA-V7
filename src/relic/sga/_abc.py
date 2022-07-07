@@ -5,7 +5,17 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from io import BytesIO
 from pathlib import PurePath
-from typing import List, Optional, Tuple, BinaryIO, Generic, TypeVar, Any, Union, Generator
+from typing import (
+    List,
+    Optional,
+    Tuple,
+    BinaryIO,
+    Generic,
+    TypeVar,
+    Any,
+    Union,
+    Generator,
+)
 
 from typing_extensions import TypeAlias
 
@@ -70,20 +80,18 @@ class FileDefABC:
 
 TMeta = TypeVar("TMeta")
 TFileMeta = TypeVar("TFileMeta")
-
-# From what I can tell; ForwardRefs can't be used as type aliases for mypy & act as proper forward refs
-# 'File[TFileMeta]': TypeAlias = 'File'
-# 'Folder[TFileMeta]': TypeAlias = 'Folder'
-# _DRIVE: TypeAlias = 'Drive'
-# Union['Folder[TFileMeta]','Drive[TFileMeta]']: TypeAlias = Union['Folder', 'Drive']
-_WALK: TypeAlias = IOWalk[Union['Folder[TFileMeta]', 'Drive[TFileMeta]'], 'Folder[TFileMeta]', 'File[TFileMeta]']
+_WALK: TypeAlias = IOWalk[
+    Union["Folder[TFileMeta]", "Drive[TFileMeta]"],
+    "Folder[TFileMeta]",
+    "File[TFileMeta]",
+]
 
 
 @dataclass
 class File(
     IOPathable,
-    IOChild[Union['Folder[TFileMeta]', 'Drive[TFileMeta]']],
-    Generic[TFileMeta]
+    IOChild[Union["Folder[TFileMeta]", "Drive[TFileMeta]"]],
+    Generic[TFileMeta],
 ):
     # pylint: disable=too-many-instance-attributes
     name: str
@@ -99,9 +107,8 @@ class File(
         if self._data is None:
             if self._lazy_info is None:
                 raise TypeError("Data was not loaded!")
-            else:
-                self._data = self._lazy_info.read()
-                self._lazy_info = None
+            self._data = self._lazy_info.read()
+            self._lazy_info = None
         return self._data
 
     @data.setter
@@ -141,10 +148,14 @@ class File(
 @dataclass
 class Folder(
     IOPathable,
-    IOChild[Union['Folder[TFileMeta]','Drive[TFileMeta]']],
-    IOWalkable[Union['Folder[TFileMeta]','Drive[TFileMeta]'], 'Folder[TFileMeta]', 'File[TFileMeta]'],
-    IOContainer['Folder[TFileMeta]', 'File[TFileMeta]'],
-    Generic[TFileMeta]
+    IOChild[Union["Folder[TFileMeta]", "Drive[TFileMeta]"]],
+    IOWalkable[
+        Union["Folder[TFileMeta]", "Drive[TFileMeta]"],
+        "Folder[TFileMeta]",
+        "File[TFileMeta]",
+    ],
+    IOContainer["Folder[TFileMeta]", "File[TFileMeta]"],
+    Generic[TFileMeta],
 ):
     name: str
     sub_folders: List[Folder[TFileMeta]]
@@ -165,9 +176,13 @@ class Folder(
 @dataclass
 class Drive(
     IOPathable,
-    IOWalkable[Union['Folder[TFileMeta]','Drive[TFileMeta]'], 'Folder[TFileMeta]', 'File[TFileMeta]'],
-    IOContainer['Folder[TFileMeta]', 'File[TFileMeta]'],
-    Generic[TFileMeta]
+    IOWalkable[
+        Union["Folder[TFileMeta]", "Drive[TFileMeta]"],
+        "Folder[TFileMeta]",
+        "File[TFileMeta]",
+    ],
+    IOContainer["Folder[TFileMeta]", "File[TFileMeta]"],
+    Generic[TFileMeta],
 ):
     alias: str
     name: str
@@ -201,7 +216,9 @@ TArchive = TypeVar("TArchive", bound=Archive[Any, Any])
 
 
 class ArchiveSerializer(p.ArchiveIO[TArchive]):
-    def read(self, stream: BinaryIO, lazy: bool = False, decompress: bool = True) -> TArchive:
+    def read(
+        self, stream: BinaryIO, lazy: bool = False, decompress: bool = True
+    ) -> TArchive:
         raise NotImplementedError
 
     def write(self, stream: BinaryIO, archive: TArchive) -> int:

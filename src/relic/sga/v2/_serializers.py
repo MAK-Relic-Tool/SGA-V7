@@ -21,25 +21,42 @@ class FileDefSerializer(StreamSerializer[FileDef]):
     """
     Serializes File information using the V2 format.
     """
+
     STORAGE2INT: Dict[StorageType, int] = {
         StorageType.STORE: 0,
         StorageType.BUFFER_COMPRESS: 16,
-        StorageType.STREAM_COMPRESS: 32
+        StorageType.STREAM_COMPRESS: 32,
     }
-    INT2STORAGE: Dict[int, StorageType] = {value: key for key, value in STORAGE2INT.items()}  # reverse the dictionary
+    INT2STORAGE: Dict[int, StorageType] = {
+        value: key for key, value in STORAGE2INT.items()
+    }  # reverse the dictionary
 
     def __init__(self, layout: Struct):
         self.layout = layout
 
     def unpack(self, stream: BinaryIO) -> FileDef:
         storage_type_val: int
-        name_pos, storage_type_val, data_pos, length_on_disk, length_in_archive = self.layout.unpack_stream(stream)
+        (
+            name_pos,
+            storage_type_val,
+            data_pos,
+            length_on_disk,
+            length_in_archive,
+        ) = self.layout.unpack_stream(stream)
         storage_type: StorageType = self.INT2STORAGE[storage_type_val]
-        return FileDef(name_pos, data_pos, length_on_disk, length_in_archive, storage_type)
+        return FileDef(
+            name_pos, data_pos, length_on_disk, length_in_archive, storage_type
+        )
 
     def pack(self, stream: BinaryIO, value: FileDef) -> int:
         storage_type = self.STORAGE2INT[value.storage_type]
-        args = value.name_pos, storage_type, value.data_pos, value.length_on_disk, value.length_in_archive
+        args = (
+            value.name_pos,
+            storage_type,
+            value.data_pos,
+            value.length_on_disk,
+            value.length_in_archive,
+        )
         packed: int = self.layout.pack_stream(stream, *args)
         return packed
 
@@ -49,6 +66,7 @@ class ArchiveHeader:
     """
     Container for header information used by V2
     """
+
     name: str
     ptrs: ArchivePtrs
     file_md5: bytes
@@ -60,12 +78,19 @@ class ArchiveHeaderSerializer(StreamSerializer[ArchiveHeader]):
     """
     Serializer to convert header information to it's dataclass; ArchiveHeader
     """
+
     layout: Struct
 
     ENCODING = "utf-16-le"
 
     def unpack(self, stream: BinaryIO) -> ArchiveHeader:
-        file_md5, encoded_name, header_md5, header_size, data_pos = self.layout.unpack_stream(stream)
+        (
+            file_md5,
+            encoded_name,
+            header_md5,
+            header_size,
+            data_pos,
+        ) = self.layout.unpack_stream(stream)
         header_pos = stream.tell()
         name = encoded_name.rstrip(b"").decode(self.ENCODING)
         ptrs = ArchivePtrs(header_pos, header_size, data_pos)
@@ -73,8 +98,14 @@ class ArchiveHeaderSerializer(StreamSerializer[ArchiveHeader]):
 
     def pack(self, stream: BinaryIO, value: ArchiveHeader) -> int:
         encoded_name = value.name.encode(self.ENCODING)
-        args = value.file_md5, encoded_name, value.header_md5, value.ptrs.header_size, value.ptrs.data_pos
-        written:int = self.layout.pack_stream(stream, *args)
+        args = (
+            value.file_md5,
+            encoded_name,
+            value.header_md5,
+            value.ptrs.header_size,
+            value.ptrs.data_pos,
+        )
+        written: int = self.layout.pack_stream(stream, *args)
         return written
 
 
@@ -94,7 +125,9 @@ class ArchiveSerializer(_abc.ArchiveSerializer[Archive]):
     FILE_MD5_EIGEN: ClassVar = b"E01519D6-2DB7-4640-AF54-0A23319C56C3"
     HEADER_MD5_EIGEN: ClassVar = b"DFC9AF62-FC1B-4180-BC27-11CCE87D3EFF"
 
-    def read(self, stream: BinaryIO, lazy: bool = False, decompress: bool = True) -> Archive:
+    def read(
+        self, stream: BinaryIO, lazy: bool = False, decompress: bool = True
+    ) -> Archive:
         MagicWord.read_magic_word(stream)
         stream_version = Version.unpack(stream)
         if stream_version != self.version:
@@ -112,7 +145,7 @@ class ArchiveSerializer(_abc.ArchiveSerializer[Archive]):
             folder_def=self.folder_serializer,
             decompress=decompress,
             build_file_meta=lambda _: None,  # V2 has no metadata
-            name_toc_is_count=True
+            name_toc_is_count=True,
         )
 
         if not lazy:
@@ -122,14 +155,14 @@ class ArchiveSerializer(_abc.ArchiveSerializer[Archive]):
             expected=archive_header.file_md5,
             stream=stream,
             start=archive_header.ptrs.header_pos,
-            eigen=self.FILE_MD5_EIGEN
+            eigen=self.FILE_MD5_EIGEN,
         )
         header_md5_helper = _s.Md5ChecksumHelper(
             expected=archive_header.header_md5,
             stream=stream,
             start=archive_header.ptrs.header_pos,
             size=archive_header.ptrs.header_size,
-            eigen=self.HEADER_MD5_EIGEN
+            eigen=self.HEADER_MD5_EIGEN,
         )
         metadata = ArchiveMetadata(file_md5_helper, header_md5_helper)
 

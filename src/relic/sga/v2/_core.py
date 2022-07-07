@@ -28,7 +28,7 @@ class ArchiveMetadata:
         The File's MD5, used to validate that the archive (whole file) has not changed since creation.
         :return: File MD5 hash; 16 bytes long.
         """
-        md5:Optional[bytes] = self._file_md5.expected
+        md5: Optional[bytes] = self._file_md5.expected
         if md5 is None:
             raise TypeError("Md5 Checksum was not saved in metadata!")
         return md5
@@ -39,7 +39,7 @@ class ArchiveMetadata:
         The Header's MD5, used to validate that the header (folder/file layout) has not changed since creation.
         :return: Header MD5 hash; 16 bytes long.
         """
-        md5:Optional[bytes] = self._header_md5.expected
+        md5: Optional[bytes] = self._header_md5.expected
         if md5 is None:
             raise TypeError("Md5 Checksum was not saved in metadata!")
         return md5

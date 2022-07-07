@@ -12,7 +12,7 @@ version = Version(7)
 @dataclass
 class ArchiveMetadata:
     unk_a: int
-    block_size:int
+    block_size: int
 
 
 @dataclass
@@ -31,7 +31,7 @@ class FileMetadata:
     hash_pos: int
 
 
-Archive = _abc.Archive[ArchiveMetadata,FileMetadata]
+Archive = _abc.Archive[ArchiveMetadata, FileMetadata]
 Folder = _abc.Folder[FileMetadata]
 File = _abc.File[FileMetadata]
 Drive = _abc.Drive[FileMetadata]

@@ -4,7 +4,17 @@ Defines protocols that the SGA API uses.
 from __future__ import annotations
 
 from pathlib import PurePath
-from typing import TypeVar, Protocol, List, Optional, Iterable, BinaryIO, runtime_checkable, Sequence, Tuple
+from typing import (
+    TypeVar,
+    Protocol,
+    List,
+    Optional,
+    Iterable,
+    BinaryIO,
+    runtime_checkable,
+    Sequence,
+    Tuple,
+)
 from typing_extensions import TypeAlias
 
 TParent = TypeVar("TParent")
@@ -64,6 +74,7 @@ class IOChild(Protocol[TParent]):
     """
     Represents an object that has a parent in an SGA file system.
     """
+
     # pylint: disable=too-few-public-methods
     parent: Optional[TParent]
 
@@ -72,13 +83,16 @@ class IOContainer(Protocol[TFolder, TFile]):
     """
     Represents an object that contains sub-files/sub-folders in an SGA file system.
     """
+
     # pylint: disable=too-few-public-methods
     sub_folders: List[TFolder]
     files: List[TFile]
 
 
 IOWalkStep: TypeAlias = Tuple[TParent_co, Sequence[TFolder_co], Sequence[TFile_co]]
-IOWalk: TypeAlias = Iterable[Tuple[TParent_co, Sequence[TFolder_co], Sequence[TFile_co]]]
+IOWalk: TypeAlias = Iterable[
+    Tuple[TParent_co, Sequence[TFolder_co], Sequence[TFile_co]]
+]
 
 
 class IOWalkable(Protocol[TParent_co, TFolder_co, TFile_co]):
@@ -101,7 +115,9 @@ class ArchiveIO(Protocol[TArchive]):
     Represents a class which allows reading/writing an SGA Archive.
     """
 
-    def read(self, stream: BinaryIO, lazy: bool = False, decompress: bool = True) -> TArchive:
+    def read(
+        self, stream: BinaryIO, lazy: bool = False, decompress: bool = True
+    ) -> TArchive:
         """
         Converts an archive from its binary representation.
 

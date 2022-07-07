@@ -6,10 +6,21 @@ from typing import BinaryIO
 
 from serialization_tools.structx import Struct
 
-from relic.errors import MismatchError
-from relic.sga._abc import ArchivePtrs, ArchiveSerializer as ArchiveSerializerABC, DriveDef, FolderDef
+from relic.core.errors import MismatchError
+from relic.sga._abc import (
+    ArchivePtrs,
+    ArchiveSerializer as ArchiveSerializerABC,
+    DriveDef,
+    FolderDef,
+)
 from relic.sga._core import StorageType, VerificationType, MagicWord, Version
-from relic.sga._serializers import read_toc, load_lazy_data, TocHeaderSerializer, DriveDefSerializer, FolderDefSerializer
+from relic.sga._serializers import (
+    read_toc,
+    load_lazy_data,
+    TocHeaderSerializer,
+    DriveDefSerializer,
+    FolderDefSerializer,
+)
 from relic.sga.errors import VersionMismatchError
 from relic.sga.protocols import StreamSerializer
 from relic.sga.v7._core import FileDef, Archive, FileMetadata, ArchiveMetadata, version
@@ -20,19 +31,49 @@ class FileDefSerializer(StreamSerializer[FileDef]):
         self.layout = layout
 
     def unpack(self, stream: BinaryIO) -> FileDef:
-        name_rel_pos, data_rel_pos, length, store_length, modified_seconds, verification_type_val, storage_type_val, crc, hash_pos = self.layout.unpack_stream(stream)
+        (
+            name_rel_pos,
+            data_rel_pos,
+            length,
+            store_length,
+            modified_seconds,
+            verification_type_val,
+            storage_type_val,
+            crc,
+            hash_pos,
+        ) = self.layout.unpack_stream(stream)
 
         modified = datetime.fromtimestamp(modified_seconds, timezone.utc)
         storage_type: StorageType = StorageType(storage_type_val)
         verification_type: VerificationType = VerificationType(verification_type_val)
 
-        return FileDef(name_rel_pos, data_rel_pos, length, store_length, storage_type, modified, verification_type, crc, hash_pos)
+        return FileDef(
+            name_rel_pos,
+            data_rel_pos,
+            length,
+            store_length,
+            storage_type,
+            modified,
+            verification_type,
+            crc,
+            hash_pos,
+        )
 
     def pack(self, stream: BinaryIO, value: FileDef) -> int:
         modified: int = int(value.modified.timestamp())
         storage_type = value.storage_type.value  # convert enum to value
         verification_type = value.verification.value  # convert enum to value
-        args = value.name_pos, value.data_pos, value.length_on_disk, value.length_in_archive, modified, verification_type, storage_type, value.crc, value.hash_pos
+        args = (
+            value.name_pos,
+            value.data_pos,
+            value.length_on_disk,
+            value.length_in_archive,
+            modified,
+            verification_type,
+            storage_type,
+            value.crc,
+            value.hash_pos,
+        )
         packed: int = self.layout.pack_stream(stream, *args)
         return packed
 
@@ -45,9 +86,8 @@ class ArchiveHeader:
 
 @dataclass
 class ArchiveFooter:
-    unk_a:int
-    block_size:int
-
+    unk_a: int
+    block_size: int
 
 
 @dataclass
@@ -73,20 +113,18 @@ class ArchiveHeaderSerializer(StreamSerializer[ArchiveHeader]):
         return written
 
 
-
 @dataclass
 class ArchiveFooterSerializer(StreamSerializer[ArchiveFooter]):
     layout: Struct
 
     def unpack(self, stream: BinaryIO) -> ArchiveFooter:
         unk_a, block_size = self.layout.unpack_stream(stream)
-        return ArchiveFooter(unk_a,block_size)
+        return ArchiveFooter(unk_a, block_size)
 
     def pack(self, stream: BinaryIO, value: ArchiveFooter) -> int:
         args = value.unk_a, value.block_size
         written: int = self.layout.pack_stream(stream, *args)
         return written
-
 
 
 def file_def2meta(f: FileDef) -> FileMetadata:
@@ -103,11 +141,13 @@ class ArchiveSerializer(ArchiveSerializerABC[Archive]):
     archive_header_serializer: ArchiveHeaderSerializer
     archive_footer_serializer: ArchiveFooterSerializer
 
-    def read(self, stream: BinaryIO, lazy: bool = False, decompress: bool = True) -> Archive:
+    def read(
+        self, stream: BinaryIO, lazy: bool = False, decompress: bool = True
+    ) -> Archive:
         MagicWord.read_magic_word(stream)
-        version = Version.unpack(stream)
-        if version != self.version:
-            raise VersionMismatchError(version, self.version)
+        version_read = Version.unpack(stream)
+        if version_read != self.version:
+            raise VersionMismatchError(version_read, self.version)
 
         header = self.archive_header_serializer.unpack(stream)
         # stream.seek(header_pos)
@@ -122,7 +162,7 @@ class ArchiveSerializer(ArchiveSerializerABC[Archive]):
             folder_def=self.folder_serializer,
             decompress=decompress,
             build_file_meta=file_def2meta,
-            name_toc_is_count=True
+            name_toc_is_count=True,
         )
 
         if not lazy:
