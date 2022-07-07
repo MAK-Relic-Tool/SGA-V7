@@ -8,7 +8,7 @@ import pytest
 
 from relic.sga import v2, v5, v9, MagicWord, Version, v7
 from relic.sga.protocols import ArchiveIO as API
-from tests.relic.sga.datagen import DowII, DowI, DowIII
+from datagen import DowII, DowI, DowIII
 
 
 class APITests:

@@ -7,11 +7,11 @@ Welcome to Relic Game Tool's documentation!
 ===========================================
 
 .. autosummary::
-   :toctree: _autosummary
+   :toctree: generated/index-autosummary
    :template: module-custom.rst
    :recursive:
 
-   relic
+   relic.sga
 
 
 Indices and tables
