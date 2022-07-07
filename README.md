@@ -33,5 +33,4 @@ Via importing the python package, or running the relic from the command line.<br
 *Details pending*
 
 ## Format Specifications
-I've compiled what I've learned on the [Wiki](https://github.com/ModernMAK/Relic-SGA-Archive-Tool/wiki).
-It may be lacking compared to the actual python code; for more information, you may wish to examine the `relic\sga`, `relic\chunky`, and `relic\chunky_formats` sub-packages instead.
+I've compiled what I've learned on the [Wiki](https://github.com/ModernMAK/Relic-Tool-SGA/wiki).

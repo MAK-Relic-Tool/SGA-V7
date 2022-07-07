@@ -16,13 +16,13 @@ import sys
 sys.path.insert(0, os.path.abspath('../../src'))
 
 # -- Project information -----------------------------------------------------
+from relic.sga import __version__ as package_version
 
-project = 'Relic Game Tool'
+project = 'Relic Tool - SGA'
 copyright = '2022, Marcus Kertesz'
 author = 'Marcus Kertesz'
 
 # The full version, including alpha/beta/rc tags
-from relic import __version__ as package_version
 release = package_version
 
 # -- General configuration ---------------------------------------------------
