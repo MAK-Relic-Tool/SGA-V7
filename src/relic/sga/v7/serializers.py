@@ -7,7 +7,7 @@ from typing import BinaryIO
 from serialization_tools.structx import Struct
 
 from relic.core.errors import MismatchError
-from relic.sga._abc import (
+from relic.sga.abstract import (
     ArchivePtrs,
     ArchiveSerializer as ArchiveSerializerABC,
     DriveDef,
@@ -23,7 +23,7 @@ from relic.sga._serializers import (
 )
 from relic.sga.errors import VersionMismatchError
 from relic.sga.protocols import StreamSerializer
-from relic.sga.v7._core import FileDef, Archive, FileMetadata, ArchiveMetadata, version
+from relic.sga.v7.definitions import FileDef, Archive, FileMetadata, ArchiveMetadata, version
 
 
 class FileDefSerializer(StreamSerializer[FileDef]):
