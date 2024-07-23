@@ -1,6 +1,6 @@
 ### This REPO IS CONSIDERED INCOMPLETE
 ### AS OF 7/23/2024 THIS REPO WILL NOT BE GETTING FURTHER UPDATES
-#### Subject to change
+#### Status Subject to change
 
 # Relic Tool - SGA
 [![PyPI](https://img.shields.io/pypi/v/relic-tool-sga)](https://pypi.org/project/relic-tool-sga/)
